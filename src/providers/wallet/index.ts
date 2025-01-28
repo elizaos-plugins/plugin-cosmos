@@ -5,16 +5,16 @@ import {
 } from "@chain-registry/utils";
 import { assets } from "chain-registry";
 import { initWalletChainsData } from "./utils";
-import { ICosmosPluginOptions } from "../../shared/interfaces";
+// import { ICosmosPluginOptions } from "../../shared/interfaces";
 import { getAvailableAssets } from "../../shared/helpers/cosmos-assets";
 
-export const createCosmosWalletProvider = (
-    pluginOptions: ICosmosPluginOptions
-) => ({
+export const cosmosWalletProvider = {
     get: async (runtime: IAgentRuntime) => {
         let providerContextMessage = "";
 
-        const customAssets = (pluginOptions?.customChainData ?? []).map(
+        const customChainDataString = runtime.getSetting('COSMOS_CUSTOM_CHAIN_DATA') || null;
+        const customChainData = customChainDataString ? JSON.parse(customChainDataString) : [];
+        const customAssets = customChainData.map(
             (chainData) => chainData.assets
         );
 
@@ -66,4 +66,4 @@ export const createCosmosWalletProvider = (
             return null;
         }
     },
-});
+};

@@ -1,17 +1,15 @@
 import type { Plugin } from "@elizaos/core";
-import { createTransferAction } from "./actions/transfer";
-import { createCosmosWalletProvider } from "./providers/wallet";
-import { ICosmosPluginOptions } from "./shared/interfaces";
+import { transferAction } from "./actions/transfer";
+import { cosmosWalletProvider } from "./providers/wallet";
+// import { ICosmosPluginOptions } from "./shared/interfaces";
 
-export const createCosmosPlugin = (
-    pluginOptions?: ICosmosPluginOptions
-): Plugin => ({
+const cosmosPlugin: Plugin = {
     name: "cosmos",
     description: "Cosmos blockchain integration plugin",
-    providers: [createCosmosWalletProvider(pluginOptions)],
+    providers: [cosmosWalletProvider],
     evaluators: [],
     services: [],
-    actions: [createTransferAction(pluginOptions)],
-});
+    actions: [transferAction],
+};
 
-export default createCosmosPlugin;
+export default cosmosPlugin;

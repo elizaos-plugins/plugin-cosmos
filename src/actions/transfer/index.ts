@@ -12,11 +12,11 @@ import { cosmosTransferTemplate } from "../../templates";
 import { CosmosTransferActionService } from "./services/cosmos-transfer-action-service";
 import type { CosmosTransferParams } from "./types";
 import type {
-    ICosmosPluginOptions,
+    // ICosmosPluginOptions,
     ICosmosWalletChains,
 } from "../../shared/interfaces";
 
-export const createTransferAction = (pluginOptions: ICosmosPluginOptions) => ({
+export const transferAction = {
     name: "COSMOS_TRANSFER",
     description: "Transfer tokens between addresses on the same chain",
     handler: async (
@@ -26,6 +26,9 @@ export const createTransferAction = (pluginOptions: ICosmosPluginOptions) => ({
         _options: { [key: string]: unknown },
         _callback?: HandlerCallback
     ) => {
+        const customChainDataString = _runtime.getSetting('COSMOS_CUSTOM_CHAIN_DATA') || null;
+        const customChainData = customChainDataString ? JSON.parse(customChainDataString) : [];
+
         const cosmosTransferContext = composeContext({
             state: state,
             template: cosmosTransferTemplate,
@@ -51,7 +54,7 @@ export const createTransferAction = (pluginOptions: ICosmosPluginOptions) => ({
 
             const action = new CosmosTransferActionService(walletProvider);
 
-            const customAssets = (pluginOptions?.customChainData ?? []).map(
+            const customAssets = customChainData.map(
                 (chainData) => chainData.assets
             );
 
@@ -213,4 +216,4 @@ export const createTransferAction = (pluginOptions: ICosmosPluginOptions) => ({
         "COSMOS_TOKEN_TRANSFER",
         "COSMOS_MOVE_TOKENS",
     ],
-});
+};
