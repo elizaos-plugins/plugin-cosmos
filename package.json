@@ -24,5 +24,19 @@
     },
     "devDependencies": {
         "@chain-registry/types": "^0.50.44"
+    },
+    "agentConfig": {
+        "pluginType": "elizaos:client:1.0.0",
+        "pluginParameters": {
+            "COSMOS_RECOVERY_PHRASE": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Cosmos wallet recovery phrase (mnemonic words)"
+            },
+            "COSMOS_AVAILABLE_CHAINS": {
+                "type": "string",
+                "description": "Comma-separated list of available Cosmos chains",
+            }
+        }
     }
 }
