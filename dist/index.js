@@ -290,10 +290,12 @@ var CosmosTransferActionService = class {
 };
 
 // src/actions/transfer/index.ts
-var createTransferAction = (pluginOptions) => ({
+var transferAction = {
   name: "COSMOS_TRANSFER",
   description: "Transfer tokens between addresses on the same chain",
   handler: async (_runtime, _message, state, _options, _callback) => {
+    const customChainDataString = _runtime.getSetting("COSMOS_CUSTOM_CHAIN_DATA") || null;
+    const customChainData = customChainDataString ? JSON.parse(customChainDataString) : [];
     const cosmosTransferContext = composeContext({
       state,
       template: cosmosTransferTemplate,
@@ -313,7 +315,7 @@ var createTransferAction = (pluginOptions) => ({
     try {
       const walletProvider = await initWalletChainsData(_runtime);
       const action = new CosmosTransferActionService(walletProvider);
-      const customAssets = (pluginOptions?.customChainData ?? []).map(
+      const customAssets = customChainData.map(
         (chainData) => chainData.assets
       );
       const transferResp = await action.execute(
@@ -469,7 +471,7 @@ Transaction Hash: ${transferResp.txHash}`,
     "COSMOS_TOKEN_TRANSFER",
     "COSMOS_MOVE_TOKENS"
   ]
-});
+};
 
 // src/providers/wallet/index.ts
 import {
@@ -477,10 +479,12 @@ import {
   getSymbolByDenom
 } from "@chain-registry/utils";
 import { assets as assets2 } from "chain-registry";
-var createCosmosWalletProvider = (pluginOptions) => ({
+var cosmosWalletProvider = {
   get: async (runtime) => {
     let providerContextMessage = "";
-    const customAssets = (pluginOptions?.customChainData ?? []).map(
+    const customChainDataString = runtime.getSetting("COSMOS_CUSTOM_CHAIN_DATA") || null;
+    const customChainData = customChainDataString ? JSON.parse(customChainDataString) : [];
+    const customAssets = customChainData.map(
       (chainData) => chainData.assets
     );
     const availableAssets = getAvailableAssets(assets2, customAssets);
@@ -524,20 +528,19 @@ ________________
       return null;
     }
   }
-});
+};
 
 // src/index.ts
-var createCosmosPlugin = (pluginOptions) => ({
+var cosmosPlugin = {
   name: "cosmos",
   description: "Cosmos blockchain integration plugin",
-  providers: [createCosmosWalletProvider(pluginOptions)],
+  providers: [cosmosWalletProvider],
   evaluators: [],
   services: [],
-  actions: [createTransferAction(pluginOptions)]
-});
-var index_default = createCosmosPlugin;
+  actions: [transferAction]
+};
+var index_default = cosmosPlugin;
 export {
-  createCosmosPlugin,
   index_default as default
 };
 //# sourceMappingURL=index.js.map
