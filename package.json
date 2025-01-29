@@ -35,7 +35,7 @@
             },
             "COSMOS_AVAILABLE_CHAINS": {
                 "type": "string",
-                "description": "Comma-separated list of available Cosmos chains",
+                "description": "Comma-separated list of available Cosmos chains"
             }
         }
     }
