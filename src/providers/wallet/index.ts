@@ -1,20 +1,20 @@
-import { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@elizaos/core";
 import {
     convertBaseUnitToDisplayUnit,
     getSymbolByDenom,
 } from "@chain-registry/utils";
 import { assets } from "chain-registry";
 import { initWalletChainsData } from "./utils";
-// import { ICosmosPluginOptions } from "../../shared/interfaces";
+import type { ICosmosPluginOptions } from "../../shared/interfaces";
 import { getAvailableAssets } from "../../shared/helpers/cosmos-assets";
 
-export const cosmosWalletProvider = {
+export const createCosmosWalletProvider = (
+    pluginOptions: ICosmosPluginOptions
+) => ({
     get: async (runtime: IAgentRuntime) => {
         let providerContextMessage = "";
 
-        const customChainDataString = runtime.getSetting('COSMOS_CUSTOM_CHAIN_DATA') || null;
-        const customChainData = customChainDataString ? JSON.parse(customChainDataString) : [];
-        const customAssets = customChainData.map(
+        const customAssets = (pluginOptions?.customChainData ?? []).map(
             (chainData) => chainData.assets
         );
 
@@ -66,4 +66,4 @@ export const cosmosWalletProvider = {
             return null;
         }
     },
-};
+});
