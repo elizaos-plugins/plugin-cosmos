@@ -1,5 +1,14 @@
 import { Plugin } from '@elizaos/core';
+import { chains, assets } from 'chain-registry';
 
-declare const cosmosPlugin: Plugin;
+interface ICosmosPluginCustomChainData {
+    chainData: (typeof chains)[number];
+    assets: (typeof assets)[number];
+}
+interface ICosmosPluginOptions {
+    customChainData?: ICosmosPluginCustomChainData[];
+}
 
-export { cosmosPlugin as default };
+declare const createCosmosPlugin: (pluginOptions?: ICosmosPluginOptions) => Plugin;
+
+export { createCosmosPlugin, createCosmosPlugin as default };
