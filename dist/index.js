@@ -44,9 +44,12 @@ var CosmosWallet = class _CosmosWallet {
 
 // src/shared/helpers/cosmos-chains.ts
 var getAvailableChains = (chains4, customChains) => [
-  ...chains4?.filter(
-    (chain) => !(customChains ?? [])?.map((customChain) => customChain.chain_name)?.includes(chain.chain_name)
-  ) ?? [],
+  ...(chains4 == null ? void 0 : chains4.filter(
+    (chain) => {
+      var _a, _b;
+      return !((_b = (_a = customChains ?? []) == null ? void 0 : _a.map((customChain) => customChain.chain_name)) == null ? void 0 : _b.includes(chain.chain_name));
+    }
+  )) ?? [],
   ...customChains ?? []
 ];
 
@@ -58,6 +61,7 @@ var CosmosWalletChains = class _CosmosWalletChains {
     this.walletChainsData = walletChainsData;
   }
   static async create(mnemonic, availableChainNames, customChainsData) {
+    var _a, _b;
     const walletChainsData = {};
     const availableChains = getAvailableChains(chains, customChainsData);
     for (const chainName of availableChainNames) {
@@ -70,7 +74,7 @@ var CosmosWalletChains = class _CosmosWalletChains {
         chain.bech32_prefix,
         chain.apis.rpc[0].address
       );
-      const chainRpcAddress = chain.apis?.rpc?.[0].address;
+      const chainRpcAddress = (_b = (_a = chain.apis) == null ? void 0 : _a.rpc) == null ? void 0 : _b[0].address;
       if (!chainRpcAddress) {
         throw new Error(`RPC address not found for chain ${chainName}`);
       }
@@ -333,10 +337,11 @@ var getPaidFeeFromReceipt = (receipt, eventsToPickGasFor = DEFUALT_EVENTS) => {
   );
   return selectedEvents.reduce((acc, { attributes }) => {
     return acc + attributes.reduce((_acc, { key, value }) => {
+      var _a;
       if (eventsToPickGasFor.some(
         ({ attributeType }) => attributeType === key
       )) {
-        const testValue = value.match(/\d+/)?.[0];
+        const testValue = (_a = value.match(/\d+/)) == null ? void 0 : _a[0];
         const testValueAsNumber = Number(testValue);
         if (Number.isNaN(testValueAsNumber)) {
           return _acc;
@@ -478,7 +483,7 @@ var createTransferAction = (pluginOptions) => ({
     try {
       const walletProvider = await initWalletChainsData(_runtime);
       const action = new CosmosTransferActionService(walletProvider);
-      const customAssets = (pluginOptions?.customChainData ?? []).map(
+      const customAssets = ((pluginOptions == null ? void 0 : pluginOptions.customChainData) ?? []).map(
         (chainData) => chainData.assets
       );
       const transferResp = await action.execute(
@@ -534,7 +539,7 @@ Transaction Hash: ${transferResp.txHash}`,
   validate: async (runtime) => {
     const mnemonic = runtime.getSetting("COSMOS_RECOVERY_PHRASE");
     const availableChains = runtime.getSetting("COSMOS_AVAILABLE_CHAINS");
-    const availableChainsArray = availableChains?.split(",");
+    const availableChainsArray = availableChains == null ? void 0 : availableChains.split(",");
     return !(mnemonic && availableChains && availableChainsArray.length);
   },
   examples: [
@@ -645,7 +650,7 @@ import { assets as assets2 } from "chain-registry";
 var createCosmosWalletProvider = (pluginOptions) => ({
   get: async (runtime) => {
     let providerContextMessage = "";
-    const customAssets = (pluginOptions?.customChainData ?? []).map(
+    const customAssets = ((pluginOptions == null ? void 0 : pluginOptions.customChainData) ?? []).map(
       (chainData) => chainData.assets
     );
     const availableAssets = getAvailableAssets(assets2, customAssets);
@@ -843,8 +848,8 @@ var createIBCSwapAction = (pluginOptions) => ({
       fromTokenAmount: cosmosIBCSwapContent.fromTokenAmount,
       toTokenSymbol: cosmosIBCSwapContent.toTokenSymbol,
       toChainName: cosmosIBCSwapContent.toChainName,
-      toTokenDenom: cosmosIBCSwapContent?.toTokenDenom || void 0,
-      fromTokenDenom: cosmosIBCSwapContent?.fromTokenDenom || void 0
+      toTokenDenom: (cosmosIBCSwapContent == null ? void 0 : cosmosIBCSwapContent.toTokenDenom) || void 0,
+      fromTokenDenom: (cosmosIBCSwapContent == null ? void 0 : cosmosIBCSwapContent.fromTokenDenom) || void 0
     };
     console.log(
       "Parameters extracted from user prompt: ",
@@ -853,7 +858,7 @@ var createIBCSwapAction = (pluginOptions) => ({
     try {
       const walletProvider = await initWalletChainsData(_runtime);
       const action = new IBCSwapAction(walletProvider);
-      const customAssets = (pluginOptions?.customChainData ?? []).map(
+      const customAssets = ((pluginOptions == null ? void 0 : pluginOptions.customChainData) ?? []).map(
         (chainData) => chainData.assets
       );
       if (_callback) {
@@ -908,7 +913,7 @@ Transaction Hash: ${swapResp.txHash}, try again`;
   validate: async (runtime) => {
     const mnemonic = runtime.getSetting("COSMOS_RECOVERY_PHRASE");
     const availableChains = runtime.getSetting("COSMOS_AVAILABLE_CHAINS");
-    const availableChainsArray = availableChains?.split(",");
+    const availableChainsArray = availableChains == null ? void 0 : availableChains.split(",");
     return !(mnemonic && availableChains && availableChainsArray.length);
   },
   examples: [
@@ -1077,7 +1082,7 @@ var IBCTransferAction = class {
         }
       });
     } catch (error) {
-      throw new Error(`Failed to execute route: ${error?.message}`);
+      throw new Error(`Failed to execute route: ${error == null ? void 0 : error.message}`);
     }
     if (!txHash) {
       throw new Error("Transaction hash is undefined after executing route");
@@ -1181,16 +1186,17 @@ var SkipApiAssetsFromSourceFetcher = class _SkipApiAssetsFromSourceFetcher {
 
 // src/actions/ibc-transfer/services/bridge-denom-provider.ts
 var bridgeDenomProvider = async (sourceAssetDenom, sourceAssetChainId, destChainId) => {
+  var _a;
   const skipApiAssetsFromSourceFetcher = SkipApiAssetsFromSourceFetcher.getInstance();
   const bridgeData = await skipApiAssetsFromSourceFetcher.fetch(
     sourceAssetDenom,
     sourceAssetChainId
   );
   const destAssets = bridgeData.dest_assets[destChainId];
-  if (!destAssets?.assets) {
+  if (!(destAssets == null ? void 0 : destAssets.assets)) {
     throw new Error(`No assets found for chain ${destChainId}`);
   }
-  const ibcAssetData = destAssets.assets?.find(
+  const ibcAssetData = (_a = destAssets.assets) == null ? void 0 : _a.find(
     ({ origin_denom }) => origin_denom === sourceAssetDenom
   );
   if (!ibcAssetData) {
@@ -1229,7 +1235,7 @@ var createIBCTransferAction = (pluginOptions) => ({
     try {
       const walletProvider = await initWalletChainsData(_runtime);
       const action = new IBCTransferAction(walletProvider);
-      const customAssets = (pluginOptions?.customChainData ?? []).map(
+      const customAssets = ((pluginOptions == null ? void 0 : pluginOptions.customChainData) ?? []).map(
         (chainData) => chainData.assets
       );
       const transferResp = await action.execute(
@@ -1285,7 +1291,7 @@ Transaction Hash: ${transferResp.txHash}`,
   validate: async (runtime) => {
     const mnemonic = runtime.getSetting("COSMOS_RECOVERY_PHRASE");
     const availableChains = runtime.getSetting("COSMOS_AVAILABLE_CHAINS");
-    const availableChainsArray = availableChains?.split(",");
+    const availableChainsArray = availableChains == null ? void 0 : availableChains.split(",");
     return !!(mnemonic && availableChains && availableChainsArray.length);
   },
   examples: [
